@@ -1,0 +1,9 @@
+#abbm{height:230px;padding:1em 2em;width:204px;}
+#abbm header{margin-bottom:1.5em}
+#abbm label{float:left;padding:2px 5px 0 0;text-align:right;width:50px}
+#abbm img{position:relative;top:2px;left:5px}
+#abbm #abbm_start_date,#abbm #abbm_end_date{font-size:12px;width:100px}
+#abbm .form-control{float:left;height:26px;padding:3px 6px}
+#abbm #abbm_reload{margin-left:50px;width:100px}
+#abbm .ui-datepicker{font-size:12px;position:absolute;top:0;left:0}
+#abbm .ui-widget-content{border:none}

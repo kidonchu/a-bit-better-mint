@@ -28,6 +28,15 @@ $(document).ready(function(){
 	$("#abbm_start_date").datepicker('setDate', this_month + '/01/' + this_year);
 	$("#abbm_end_date").datepicker('setDate', this_month + '/' + last_date + '/' + this_year);
 
+	// set date if saved on storage
+	chrome.storage.sync.get('dates', function(o){
+		if (o)
+		{
+			$("#abbm_start_date").datepicker('setDate', o.dates.start);
+			$("#abbm_end_date").datepicker('setDate', o.dates.end);
+		}
+	});
+
 	// reload with submitted info
 	$("#abbm_reload").on('click', function(){
 		chrome.tabs.getSelected(null, function (tab)
@@ -42,6 +51,8 @@ $(document).ready(function(){
 			{
 				return false;
 			}
+
+			chrome.storage.sync.set({'dates': {'start': start, 'end': end}});
 
 			// reload tab
 			var reload_url = "https://wwws.mint.com/transaction.event?startDate="+start+"&endDate="+end;

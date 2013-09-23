@@ -1,4 +1,27 @@
 $(document).ready(function(){
+	var reload_tab = function ()
+	{
+		chrome.tabs.getSelected(null, function (tab)
+		{
+			var start = $("#abbm_start_date").val();
+			var end = $("#abbm_end_date").val();
+
+			// check if dates are correct
+			var date_reg = /^(0?[1-9]|1[012])[\/](0?[1-9]|[12][0-9]|3[01])[\/]\d{4}$/;
+			if (start.match(date_reg) === null || end.match(date_reg) === null)
+			{
+				return false;
+			}
+
+			chrome.storage.sync.set({'dates': {'start': start, 'end': end}});
+
+			// reload tab
+			var reload_url = "https://wwws.mint.com/transaction.event?startDate="+start+"&endDate="+end;
+			chrome.tabs.update(tab.id, {url: reload_url});
+			window.close();
+		});
+	};
+
 	var options = {
 		showButtonPanel: true,
 		showOn: "button",
@@ -9,6 +32,7 @@ $(document).ready(function(){
 		yearRange: '-70:+0',
 		numberOfMonths: 1
 	};
+	// re-position calendar popup
 	$.extend($.datepicker,{_checkOffset:function(inst,offset,isFixed){offset.top = 5; offset.left=0; return offset;}});
 
 	// apply datepicker to dates
@@ -37,29 +61,16 @@ $(document).ready(function(){
 		}
 	});
 
-	// reload with submitted info
-	$("#abbm_reload").on('click', function(){
-		chrome.tabs.getSelected(null, function (tab)
+	// if submitted by enter, reload tab
+	$('#abbm_start_date, #abbm_end_date').on('keypress', function(e){
+		if (e.which == 13)
 		{
-			var url = tab.url;
-			var start = $("#abbm_start_date").val();
-			var end = $("#abbm_end_date").val();
-
-			// check if dates are correct
-			var date_reg = /^(0?[1-9]|1[012])[\/](0?[1-9]|[12][0-9]|3[01])[\/]\d{4}$/;
-			if (start.match(date_reg) === null || end.match(date_reg) === null)
-			{
-				return false;
-			}
-
-			chrome.storage.sync.set({'dates': {'start': start, 'end': end}});
-
-			// reload tab
-			var reload_url = "https://wwws.mint.com/transaction.event?startDate="+start+"&endDate="+end;
-			chrome.tabs.update(tab.id, {url: reload_url});
-			window.close();
-		});
+			reload_tab();
+		}
 	});
+
+	// reload with submitted info
+	$("#abbm_reload").on('click', reload_tab);
 
 	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','//www.google-analytics.com/analytics.js','ga');ga('create', 'UA-44194005-1', 'kidonchu.com'); ga('send', 'pageview');
 });
